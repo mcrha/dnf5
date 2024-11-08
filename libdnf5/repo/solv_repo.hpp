@@ -52,7 +52,7 @@ struct SolvUserdata {
 namespace libdnf5::repo {
 
 using LibsolvRepo = ::Repo;
-enum class RepodataType { FILELISTS, PRESTO, UPDATEINFO, COMPS, OTHER };
+enum class RepodataType { FILELISTS, PRESTO, UPDATEINFO, COMPS, OTHER, APPSTREAM, APPSTREAM_ICONS };
 
 
 class SolvError : public Error {

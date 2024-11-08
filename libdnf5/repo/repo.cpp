@@ -52,6 +52,9 @@ extern "C" {
 #include <filesystem>
 #include <set>
 
+#ifdef WITH_APPSTREAM
+#include <appstream.h>
+#endif
 
 namespace libdnf5::repo {
 
@@ -203,6 +206,31 @@ void Repo::read_metadata_cache() {
     p_impl->downloader->load_local();
 }
 
+void Repo::install_appstream() {
+#ifdef WITH_APPSTREAM
+    std::string repo_id = p_impl->config.get_id();
+    const char * as_basenames[] = {"appstream", "appstream-icons", NULL};
+
+    for (uint32_t i = 0; as_basenames[i] != NULL; i++) {
+        std::string tmp = get_metadata_path(as_basenames[i]);
+        GError * local_error = NULL;
+
+        if (tmp.empty())
+            continue;
+
+        if (!as_utils_install_metadata_file(
+                AS_METADATA_LOCATION_CACHE, tmp.c_str(), repo_id.c_str(), NULL, &local_error)) {
+            p_impl->base->get_logger()->debug(
+                "Failed to install Appstream metadata file '{}' for repo '{}': {}",
+                tmp,
+                repo_id,
+                local_error ? local_error->message : "Unknown error");
+        }
+
+        g_clear_error(&local_error);
+    }
+#endif
+}
 
 bool Repo::is_in_sync() {
     if (!p_impl->config.get_metalink_option().empty() && !p_impl->config.get_metalink_option().get_value().empty()) {
@@ -409,6 +437,10 @@ void Repo::load_available_repo() {
     }
 
     p_impl->solv_repo->load_repo_main(p_impl->downloader->repomd_filename, primary_fn);
+#ifdef WITH_APPSTREAM
+    p_impl->solv_repo->load_repo_ext(RepodataType::APPSTREAM, *p_impl->downloader.get());
+    p_impl->solv_repo->load_repo_ext(RepodataType::APPSTREAM_ICONS, *p_impl->downloader.get());
+#endif
 
     auto optional_metadata = p_impl->config.get_main_config().get_optional_metadata_types_option().get_value();
 

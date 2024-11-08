@@ -56,6 +56,8 @@ public:
     static constexpr const char * MD_FILENAME_GROUP_GZ = "group_gz";
     static constexpr const char * MD_FILENAME_GROUP = "group";
     static constexpr const char * MD_FILENAME_MODULES = "modules";
+    static constexpr const char * MD_FILENAME_APPSTREAM = "appstream";
+    static constexpr const char * MD_FILENAME_APPSTREAM_ICONS = "appstream-icons";
 
     RepoDownloader(const libdnf5::BaseWeakPtr & base, const ConfigRepo & config, Repo::Type repo_type);
 

@@ -179,6 +179,10 @@ static const char * repodata_type_to_name(RepodataType type) {
             return RepoDownloader::MD_FILENAME_GROUP;
         case RepodataType::OTHER:
             return RepoDownloader::MD_FILENAME_OTHER;
+        case RepodataType::APPSTREAM:
+            return RepoDownloader::MD_FILENAME_APPSTREAM;
+        case RepodataType::APPSTREAM_ICONS:
+            return RepoDownloader::MD_FILENAME_APPSTREAM_ICONS;
     }
 
     libdnf_throw_assertion("Unknown RepodataType: {}", utils::to_underlying(type));
@@ -197,6 +201,9 @@ static int repodata_type_to_flags(RepodataType type) {
             return 0;
         case RepodataType::OTHER:
             return REPO_EXTEND_SOLVABLES | REPO_LOCALPOOL;
+        case RepodataType::APPSTREAM:
+        case RepodataType::APPSTREAM_ICONS:
+            return 0;
     }
 
     libdnf_throw_assertion("Unknown RepodataType: {}", utils::to_underlying(type));
@@ -313,6 +320,8 @@ void SolvRepo::load_system_repo_ext(RepodataType type) {
         case RepodataType::OTHER:
         case RepodataType::PRESTO:
         case RepodataType::UPDATEINFO:
+        case RepodataType::APPSTREAM:
+        case RepodataType::APPSTREAM_ICONS:
             throw SolvError(M_("Unsupported extended repodata type for the system repo: \"{}\"."), type_name);
     }
 }
@@ -373,6 +382,12 @@ void SolvRepo::load_repo_ext(RepodataType type, const RepoDownloader & downloade
             res = repo_add_comps(comps_repo, ext_file.get(), 0);
             break;
         case RepodataType::OTHER:
+            res = repo_add_rpmmd(repo, ext_file.get(), 0, REPO_EXTEND_SOLVABLES);
+            break;
+        case RepodataType::APPSTREAM:
+            res = repo_add_rpmmd(repo, ext_file.get(), 0, REPO_EXTEND_SOLVABLES);
+            break;
+        case RepodataType::APPSTREAM_ICONS:
             res = repo_add_rpmmd(repo, ext_file.get(), 0, REPO_EXTEND_SOLVABLES);
             break;
     }

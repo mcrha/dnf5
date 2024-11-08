@@ -478,6 +478,10 @@ void RepoDownloader::common_handle_setup(LibrepoHandle & h) {
 #ifdef WITH_MODULEMD
     dlist.push_back(MD_FILENAME_MODULES);
 #endif
+#ifdef WITH_APPSTREAM
+    dlist.push_back(MD_FILENAME_APPSTREAM);
+    dlist.push_back(MD_FILENAME_APPSTREAM_ICONS);
+#endif
     if (optional_metadata.extract(libdnf5::METADATA_TYPE_FILELISTS)) {
         dlist.push_back(MD_FILENAME_FILELISTS);
     }
